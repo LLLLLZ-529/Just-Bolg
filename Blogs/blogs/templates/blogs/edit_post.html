@@ -1,0 +1,15 @@
+{% extends "blogs/base.html" %}
+
+{% block content %}
+  <p>Edit post:</p>
+  <form action="{% url 'blogs:edit_post' post.id %}" method='post' enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button name="submit">Save changes</button>
+  </form>
+  
+  <hr>
+  
+  <p>Danger Zone:</p>
+  <a href="{% url 'blogs:delete_post' post.id %}" style="color: red;">Delete this post</a>
+{% endblock content %}

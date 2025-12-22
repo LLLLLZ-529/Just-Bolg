@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Blog</title>
+    <link rel="stylesheet" href="{% static 'blogs/style.css' %}">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="{% url 'blogs:index' %}" class="logo">Just Blog</a>
+            <div class="nav-links">
+                {% if user.is_authenticated %}
+                    <span>Hello, {{ user.username }}</span>
+                    <a href="{% url 'blogs:new_post' %}">New Post</a>
+                    <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-logout">Log out</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}">Log in</a>
+                    <a href="{% url 'blogs:register' %}">Register</a>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock content %}
+    </main>
+</body>
+</html>
+

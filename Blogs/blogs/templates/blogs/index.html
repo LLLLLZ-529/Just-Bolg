@@ -1,0 +1,61 @@
+{% extends "blogs/base.html" %}
+
+{% block content %}
+<div class="header-actions">
+    <h1>Latest Posts</h1>
+    {% if user.is_authenticated %}
+        <a href="{% url 'blogs:new_post' %}" class="btn btn-primary">New Post</a>
+    {% endif %}
+</div>
+
+<!-- 使用新的网格容器 -->
+<div class="post-grid">
+    {% for post in posts %}
+        <article class="post-card">
+            <!-- 图片移到顶部作为封面 -->
+            {% if post.image %}
+                <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-cover-img">
+            {% else %}
+                <!-- 如果没有图片，显示一个默认的占位图或者纯色块，保持对齐 -->
+                <div class="post-cover-img" style="background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%); display: flex; align-items: center; justify-content: center; color: #999;">
+                    No Image
+                </div>
+            {% endif %}
+
+            <div class="post-content">
+                <h2 class="post-title">
+                    <a href="{% url 'blogs:post_detail' post.id %}">{{ post.title }}</a>
+                </h2>
+                
+                <div class="post-meta">
+                    <span>{{ post.date_added|date:'M d, Y' }}</span>
+                    &bull; 
+                    <span>By {{ post.owner.username }}</span>
+                    &bull;
+                    <span>{{ post.comments.count }} comments</span>
+                </div>
+                
+                <div class="post-excerpt">
+                    {{ post.text|truncatewords:20 }}
+                </div>
+                
+                <div class="post-actions">
+                    <a href="{% url 'blogs:post_detail' post.id %}" class="read-more">Read more</a>
+                    {% if user == post.owner %}
+                        <a href="{% url 'blogs:edit_post' post.id %}" class="btn-edit">Edit</a>
+                    {% endif %}
+                </div>
+            </div>
+        </article>
+    {% empty %}
+        <div class="empty-state" style="grid-column: 1 / -1;">
+            <p>No posts have been added yet.</p>
+            {% if user.is_authenticated %}
+                <a href="{% url 'blogs:new_post' %}" class="btn btn-primary">Create the first post</a>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock content %}
+

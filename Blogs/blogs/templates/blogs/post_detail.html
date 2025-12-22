@@ -1,0 +1,70 @@
+{% extends 'blogs/base.html' %}
+
+{% block content %}
+  <article class="post-card">
+    <div class="post-header">
+      <h2 class="post-title">{{ post.title }}</h2>
+      <div class="post-meta">
+        <span>{{ post.date_added|date:'M d, Y' }}</span>
+        &bull; 
+        <span>{{ post.owner.username }}</span>
+      </div>
+    </div>
+    
+    <div class="post-content">
+      {% if post.image %}
+        <img src="{{ post.image.url }}" alt="{{ post.title }}" style="max-width: 100%; height: auto; margin-bottom: 15px; border-radius: 4px;">
+      {% endif %}
+      {{ post.text|linebreaks }}
+    </div>
+
+    {% if user == post.owner %}
+      <div class="post-actions">
+        <a href="{% url 'blogs:edit_post' post.id %}" class="btn-edit">Edit Post</a>
+      </div>
+    {% endif %}
+  </article>
+
+  <div class="comments-section" style="margin-top: 40px;">
+    <h3>Comments ({{ comments.count }})</h3>
+    
+    <div class="comments-list">
+        {% for comment in comments %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">
+                        {{ comment.author.username }} - {{ comment.date_added|date:'M d, Y H:i' }}
+                    </h6>
+                    <p class="card-text">{{ comment.text|linebreaks }}</p>
+                    
+                    {# 添加以下代码块：只有作者本人或超级管理员可以看到删除链接 #}
+                    {% if user == comment.author or user.is_superuser %}
+                        <a href="{% url 'blogs:delete_comment' comment.id %}" 
+                           class="text-danger" 
+                           style="font-size: 0.9rem; text-decoration: none;"
+                           onclick="return confirm('Are you sure you want to delete this comment?');">
+                            Delete Comment
+                        </a>
+                    {% endif %}
+                    
+                </div>
+            </div>
+        {% empty %}
+            <p>No comments yet. Be the first to share your thoughts!</p>
+        {% endfor %}
+    </div>
+
+    {% if user.is_authenticated %}
+      <div class="add-comment" style="margin-top: 30px;">
+        <h4>Add a comment</h4>
+        <form action="{% url 'blogs:post_detail' post.id %}" method="post">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <button name="submit">Post Comment</button>
+        </form>
+      </div>
+    {% else %}
+      <p style="margin-top: 20px;">Please <a href="{% url 'login' %}">log in</a> to add a comment.</p>
+    {% endif %}
+  </div>
+{% endblock content %}
