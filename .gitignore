@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django
+*.log
+db.sqlite3
+db.sqlite3-journal
+staticfiles/
+media/
+
+# 环境与密钥
+.env
+
+# 虚拟环境
+venv/
+.venv/
+
+# 系统文件
+.DS_Store
